@@ -8,11 +8,12 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-BUCKET_NAME = $1; 
+# Corrected assignment without spaces
+BUCKET_NAME="$1"
 
 # Create the S3 bucket using the provided name
-
-aws s3api create-bucket --bucket $BUCKET_NAME \
- --create-bucket-configuration="LocationConstraint=ca-central-1" \
+aws s3api create-bucket --bucket "$BUCKET_NAME" \
+ --create-bucket-configuration LocationConstraint=ca-central-1 \
  --output="text"
+
 
