@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+echo "--List Buckets--"
+
+# Fetch the list of buckets along with their creation dates
+buckets=$(aws s3api list-buckets --query "Buckets[].{Name:Name,CreationDate:CreationDate}" --output text)
+
+# Sort the buckets by creation date (most recent first)
+sorted_buckets=$(echo "$buckets" | sort -rk2)
+
+# Extract and print only the bucket names
+echo "$sorted_buckets" | awk '{print $2}'
+

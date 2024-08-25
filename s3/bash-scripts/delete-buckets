@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo "--delete bucket--"
+
+# Check if the first argument (bucket name) is provided
+if [ -z "$1" ]; then
+    echo "There needs to be a bucket name, e.g., ./bucket my-bucket"
+    exit 1
+fi
+
+# Create the S3 bucket using the provided name
+aws s3api delete-bucket --bucket "$1" 
