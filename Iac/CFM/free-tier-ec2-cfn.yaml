@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a free-tier EC2 instance with Ubuntu AMI, 8 GB EBS volume, and SSH access enabled from anywhere.
+
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair.
+
+Resources:
+  # Security Group to allow SSH access
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access from anywhere
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0  # Allow SSH from anywhere
+
+  # EC2 Instance
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro  # Free tier eligible instance type
+      KeyName: !Ref KeyName
+      ImageId: ami-0e2c8caa4b6378d8c  # Ubuntu Server 20.04 LTS (Focal Fossa) AMI (update this to the latest Ubuntu AMI ID in your region)
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 8  # 8 GB EBS volume
+            VolumeType: gp2  # General Purpose SSD
+
+Outputs:
+  InstanceId:
+    Description: The Instance ID of the newly created EC2 instance
+    Value: !Ref EC2Instance
+  PublicIP:
+    Description: The public IP address of the EC2 instance
+    Value: !GetAtt EC2Instance.PublicIp
