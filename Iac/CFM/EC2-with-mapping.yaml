@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Template to create a Free Tier EC2 instance with mappings for AMI IDs, an 8 GB SSD, and SSH access.
+
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 Key Pair
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: ID of an existing security group to allow SSH access
+
+Mappings:
+  AMIMap:
+    us-east-1:
+      AMI: ami-055e3d4f0bbeb5878  # Amazon Linux 2
+    us-west-2:
+      AMI: ami-05d38da78ce859165  # Ubuntu
+
+Resources:
+  # EC2 Instance
+  EC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: t2.micro  # Free Tier eligible
+      ImageId: !FindInMap 
+        - AMIMap
+        - !Ref "AWS::Region"
+        - AMI
+      SecurityGroupIds: 
+        - !Ref SecurityGroupId
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8  # 8 GB SSD
+            VolumeType: gp2  # General Purpose SSD
+            DeleteOnTermination: true
+      KeyName: !Ref KeyName
+
+Outputs:
+  InstanceId:
+    Description: Instance ID of the created EC2 instance
+    Value: !Ref EC2Instance
+
+  PublicIP:
+    Description: Public IP address of the EC2 instance
+    Value: !GetAtt EC2Instance.
+    
+#Create stack in us-west-2
+#aws cloudformation create-stack \
+# --stack-name NewDemoStack \
+# --template-body file://EC2-with-mapping.yaml \
+# --parameters ParameterKey=KeyName,ParameterValue=DemoKeyPair ParameterKey=SecurityGroupId,ParameterValue=sg-0b081ff2047051fb8 \
+# --capabilities CAPABILITY_IAM \
+# --region us-west-2 \
+# --on-failure ROLLBACK
+
+#Delete Stack
+#aws cloudformation delete-stack --stack-name NewDemoStack --region us-west-2
+
+
