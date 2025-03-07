@@ -58,8 +58,8 @@ The repository contains bash script for commonly used S3 operations.
 Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/AWS-Practice.git
-cd AWS-Practice
+git clone https://github.com/yourusername/AWS-CFT-CLI.git
+cd AWS-CFT-CLI
 ```
 
 ## Acknowledgments
